@@ -2,7 +2,7 @@
 #Requires AutoHotkey v2.0-beta.1
 TraySetIcon(A_ScriptDir "\Assets\icon.ico")
 ; Created by Tomshi - https://www.twitch.tv/tomshi
-; v1.1.0
+; v1.2.0
 
 ; This script was created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth
@@ -24,25 +24,29 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-;////////// USER DEFINE INFORMATION HERE //////////
+;////////// USER DEFINE INFORMATION READ FROM INI FILE //////////
 ; first we define where the streamlabels folder is
+userFolderIni := IniRead(A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
+
 if DirExist(A_Desktop "\Streaming\StreamLabels\")
     files := A_Desktop "\Streaming\StreamLabels\"
+if DirExist(userFolderIni) ;if the above folder doesn't exist, it will try again using the value defined in the ini file
+    files := userFolderIni
 else
     {
-        MsgBox("A StreamLabels Folder is required at`n[" A_Desktop "\Streaming\StreamLabels\]")
+        MsgBox("A StreamLabels Folder is either required at`n[" A_Desktop "\Streaming\StreamLabels\]`nOr can be changed by editing the ini file with a preferred folder")
         return
     }
 
-; you can easily define player names below
-playerBits := "Dangers"
-playerSubs := "Azure"
+; defining player names using the ini file
+playerBits := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBits")
+playerSubs := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
 
-; next we define colours below
-playerBitsColour := "cPurple"
-playerSubsColour := "cBlue"
+; defining player colours using the ini file
+playerBitsColour := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBitsColour")
+playerSubsColour := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubsColour")
 
-;////////// END USER DEFINE INFORMATION //////////
+;////////// END USER INI INFORMATION //////////
 
 
 ;here we will define some values for use later
