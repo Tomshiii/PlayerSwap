@@ -1,6 +1,7 @@
 #SingleInstance Force
+#Requires AutoHotkey v2.0-beta.1
 ; Created by Tomshi - https://www.twitch.tv/tomshi
-; v1.0.0
+; v1.0.1
 
 ; This script was created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth
