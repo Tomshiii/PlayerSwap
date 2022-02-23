@@ -1,7 +1,8 @@
 #SingleInstance Force
 #Requires AutoHotkey v2.0-beta.1
+TraySetIcon(A_ScriptDir "\Assets\icon.ico")
 ; Created by Tomshi - https://www.twitch.tv/tomshi
-; v1.0.1
+; v1.1.0
 
 ; This script was created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth
@@ -23,7 +24,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-;first we define where the streamlabels folder is
+;////////// USER DEFINE INFORMATION HERE //////////
+; first we define where the streamlabels folder is
 if DirExist(A_Desktop "\Streaming\StreamLabels\")
     files := A_Desktop "\Streaming\StreamLabels\"
 else
@@ -31,6 +33,17 @@ else
         MsgBox("A StreamLabels Folder is required at`n[" A_Desktop "\Streaming\StreamLabels\]")
         return
     }
+
+; you can easily define player names below
+playerBits := "Dangers"
+playerSubs := "Azure"
+
+; next we define colours below
+playerBitsColour := "cPurple"
+playerSubsColour := "cBlue"
+
+;////////// END USER DEFINE INFORMATION //////////
+
 
 ;here we will define some values for use later
 getvalue() {
@@ -45,24 +58,28 @@ getvalue() {
 getvalue() ;running the above function
 
 ;next we will define our gui
-MyGui := Gui("AlwaysOnTop", "Show Info")
+MyGui := Gui("AlwaysOnTop", "Player Swap")
 MyGui.SetFont("S15") ;Sets the size of the font
 MyGui.SetFont("W500") ;Sets the weight of the font (thickness)
 MyGui.Opt("+MinSize430x150 +MaxSize430x150")
 
 ;creating the groupboxes
-dangersTitle := MyGui.Add("GroupBox", "w170 h100 Y0", "Dangers")
-azureTitle := MyGui.Add("GroupBox", "w170 h100 X200 Y0", "Azure")
+player_bits_Title := MyGui.Add("GroupBox", "w170 h100 Y0", playerBits)
+player_subs_Title := MyGui.Add("GroupBox", "w170 h100 X200 Y0", playerSubs)
 
 ;defining the text to show total amounts
-dangersAmount := MyGui.Add("Text", "X30 Y40 W155 vDangers", "$ " cheerstartround)
-dangersAmount.SetFont("cPurple")
-azureAmount := MyGui.Add("Text", "X210 Y40 W155 vAzure", "$ " subsstartround)
-azureAmount.SetFont("cblue")
+player_bits_amount := MyGui.Add("Text", "X30 Y40 W155", "$ " cheerstartround)
+player_bits_amount.SetFont(playerBitsColour)
+player_subs_amount := MyGui.Add("Text", "X210 Y40 W155", "$ " subsstartround)
+player_subs_amount.SetFont(playerSubsColour)
+
+;defining images to help guide the player
+bitsImage := MyGui.Add("Picture", "X30 Y72 w20 h-1", A_ScriptDir  "\Assets\bits.png")
+subsImage := MyGui.Add("Picture", "X210 Y72 w20 h-1", A_ScriptDir  "\Assets\subs.png")
 
 ;defining the text detailing who is currently playing
 playing := MyGui.Add("Text", "X18 Y110 W50", "Playing: ")
-player := MyGui.Add("Text", "X90 Y110 W150 W100", "...")
+player := MyGui.Add("Text", "X90 Y110 W150 W100", "waiting...")
 
 ;next we do some math to show how much $ is required to swap players
 math() {
@@ -103,14 +120,14 @@ update()
     swap.Text := "$ " swapround " until swap"
 
     ;updating player amounts
-    dangersAmount.Text := "$ " cheerstartround
-    azureAmount.Text := "$ " subsstartround
+    player_bits_amount.Text := "$ " cheerstartround
+    player_subs_amount.Text := "$ " subsstartround
 
     ;some logic to determine who should be playing as well as changing the colour
     if cheerstartround > subsstartround
         {
-            player.Text := "Dangers"
-            player.SetFont("cPurple")
+            player.Text := playerBits
+            player.SetFont(playerBitsColour)
             player.Opt("W80")
         }
     if cheerstartround = subsstartround
@@ -121,8 +138,8 @@ update()
         }
     if cheerstartround < subsstartround
         {
-            player.Text := "Azure"
-            player.SetFont("cblue")
+            player.Text := playerSubs
+            player.SetFont(playerSubsColour)
             player.Opt("W80")
         }
     ;resets the timer so it'll update again in the previously defined time
