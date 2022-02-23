@@ -5,7 +5,7 @@ It tracks who should be playing at a given point in time as well as how much $ i
 ![image](https://user-images.githubusercontent.com/53557479/155297542-26b26483-14b1-4482-bc44-2ea28bd1c819.png)
 
 ## For subs
-The script tracks subpoints and does a simple `subpounts` * `2.5` to get a $ value. Technically this means Tier 3 subs account for more than they're supposed to but it's more accurate than T2 & T3 subs not counting any extra at all
+The script tracks subpoints and does a simple `subpoints` * `2.5` to get a $ value. Technically this means Tier 3 subs account for more than they're supposed to but it's more accurate than T2 & T3 subs not counting any extra at all
 
 ## For bits
 The script tracks the amount of bits given in the current session, then does a simple `bits` / `100` to get an accurate $ value
