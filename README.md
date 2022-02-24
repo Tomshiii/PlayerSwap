@@ -12,7 +12,7 @@ The script tracks the amount of bits given in the current session, then does a s
 
 ## What to do
 - Download and install [StreamLabels](https://streamlabs.com/dashboard#/streamlabels)
-- Download and install the [latest version of PlayerSwap](https://github.com/Tomshiii/PlayerSwap/releases) ||  [![](https://img.shields.io/github/v/release/tomshiii/playerswap)](https://github.com/Tomshiii/PlayerSwap/releases)
+- Download and extract the [latest version of PlayerSwap](https://github.com/Tomshiii/PlayerSwap/releases) ||  [![](https://img.shields.io/github/v/release/tomshiii/playerswap)](https://github.com/Tomshiii/PlayerSwap/releases)
 - Set the destination folder for the text files within StreamLabels using the button shown here -> [![](https://user-images.githubusercontent.com/53557479/155299364-b75c082a-1964-411f-bf47-33f664a6993c.png)]()
 - `Player Swap` will prompt you for your StreamLabels destination folder, input it into the field provided
 - Set name and colours for both players within the settings;
