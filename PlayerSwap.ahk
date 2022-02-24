@@ -2,7 +2,7 @@
 #Requires AutoHotkey v2.0-beta.1
 TraySetIcon(A_ScriptDir "\Assets\icon.ico")
 ; Created by Tomshi - https://www.twitch.tv/tomshi
-; v1.2.0
+; v1.3.0
 
 ; This script was created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth
@@ -34,13 +34,15 @@ if DirExist(userFolderIni) ;if the above folder doesn't exist, it will try again
     files := userFolderIni
 else
     {
-        MsgBox("A StreamLabels Folder is either required at`n[" A_Desktop "\Streaming\StreamLabels\]`nOr can be changed by editing the ini file with a preferred folder")
+        ;MsgBox("A StreamLabels Folder is either required at`n[" A_Desktop "\Streaming\StreamLabels\]`nOr can be changed by editing the ini file with a preferred folder")
+        streamlabsPath := InputBox("Input the full path of your StreamLabels folder where your txt files are saved`nEg. C:\Users\Tom\Desktop\Streaming\StreamLabels",, "W358 H126")
+        IniWrite('"' streamlabsPath.Value '"', A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
         return
     }
 
 ; defining player names using the ini file
-playerBits := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBits")
-playerSubs := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
+global playerBits := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBits")
+global playerSubs := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
 
 ; defining player colours using the ini file
 playerBitsColour := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBitsColour")
@@ -72,14 +74,19 @@ player_bits_Title := MyGui.Add("GroupBox", "w170 h100 Y0", playerBits)
 player_subs_Title := MyGui.Add("GroupBox", "w170 h100 X200 Y0", playerSubs)
 
 ;defining the text to show total amounts
-player_bits_amount := MyGui.Add("Text", "X30 Y40 W155", "$ " cheerstartround)
+player_bits_amount := MyGui.Add("Text", "X30 Y50 W155", "$ " cheerstartround)
 player_bits_amount.SetFont(playerBitsColour)
-player_subs_amount := MyGui.Add("Text", "X210 Y40 W155", "$ " subsstartround)
+player_subs_amount := MyGui.Add("Text", "X210 Y50 W155", "$ " subsstartround)
 player_subs_amount.SetFont(playerSubsColour)
 
+;defining settings button
+settingsButton := MyGui.Add("Button", "X400 Y10 w25 h26", "⚙")
+settingsButton.SetFont("S13")
+settingsButton.OnEvent("Click", settings)
+
 ;defining images to help guide the player
-bitsImage := MyGui.Add("Picture", "X30 Y72 w20 h-1", A_ScriptDir  "\Assets\bits.png")
-subsImage := MyGui.Add("Picture", "X210 Y72 w20 h-1", A_ScriptDir  "\Assets\subs.png")
+bitsImage := MyGui.Add("Picture", "X160 Y5 w20 h-1", A_ScriptDir  "\Assets\bits.png")
+subsImage := MyGui.Add("Picture", "X340 Y5 w20 h-1", A_ScriptDir  "\Assets\subs.png")
 
 ;defining the text detailing who is currently playing
 playing := MyGui.Add("Text", "X18 Y110 W50", "Playing: ")
@@ -108,6 +115,84 @@ closegui(*) {
 		WinClose()
     if WinExist("PlayerSwap.exe")
 		WinClose()
+}
+
+settings(*) {
+    settingswin := Gui("+owner" MyGui.Hwnd, "Player Swap")
+    MyGui.Opt("+Disabled")
+    settingswin.SetFont("S12")
+
+    ;define settings title
+    settings_title := settingswin.Add("Text",, "Settings")
+    settings_title.SetFont("underline")
+
+    ;define bits/subs underline titles
+    settings_bits := settingswin.Add("Text","X80 Y45", "Player - Bits")
+    settings_bits.SetFont("S11 underline")
+    settings_subs := settingswin.Add("Text", "X205 Y45", "Player - Subs")
+    settings_subs.SetFont("S11 underline")
+
+    ;define the name text
+    settings_names := settingswin.Add("Text", "X15 Y85", "Names:")
+    settings_names.SetFont("S12")
+    ;define bit input field
+    bits_edit := settingswin.Add("Edit", "r1 vbitsEdit w100 X80 Y80")
+    bits_edit.SetFont("S10")
+    bits_edit.Value := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBits")
+    bits_edit.OnEvent("Change", bitsIniWrite)
+    ;define sub input field
+    subs_edit := settingswin.Add("Edit", "r1 vsubsEdit w100 X205 Y80")
+    subs_edit.SetFont("S10")
+    subs_edit.Value := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
+    subs_edit.OnEvent("Change", subsIniWrite)
+    
+    ;define the colour text
+    settings_Colour := settingswin.Add("Text", "X15 Y125", "Colour:")
+    settings_Colour.SetFont("S12")
+    ;define bit colour
+    bits_colour := settingswin.Add("DropDownList", "vBitColorChoice w100 X80 Y125", ["Black","Red","Green","Blue", "Teal", "Aqua", "Yellow", "Purple", "Fuchsia"])
+    bits_colour.SetFont("S10")
+    bits_colour.OnEvent("Change", bitsColour)
+    ;define bit colour
+    subs_colour := settingswin.Add("DropDownList", "vSubsColorChoice w100 X205 Y125", ["Black","Red","Green","Blue", "Teal", "Aqua", "Yellow", "Purple", "Fuchsia"])
+    subs_colour.SetFont("S10")
+    subs_colour.OnEvent("Change", subsColour)
+
+    ;defining final button
+    okayButton := settingswin.Add("Button", "X260 Y175 w45 h30", "OK")
+    okayButton.SetFont("S10")
+    okayButton.OnEvent("Click", okayClick)
+
+    settingswin.OnEvent("Close", closesettingsgui)
+    settingswin.Show()
+
+    bitsIniWrite(*) {
+        IniWrite('"' bits_edit.Value '"', A_ScriptDir "\User_Values.ini", "Info", "playerBits")
+        player_bits_Title.Text := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBits")
+        global playerBits := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBits")
+    }
+    subsIniWrite(*) {
+        IniWrite('"' subs_edit.Value '"', A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
+        player_subs_Title.Text := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
+        global playerSubs := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubs")
+    }
+    bitsColour(*) {
+        IniWrite('"c' bits_colour.Text '"', A_ScriptDir "\User_Values.ini", "Info", "playerBitsColour")
+        global playerBitsColour := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerBitsColour")
+        player_bits_amount.SetFont(playerBitsColour)
+    }
+    subsColour(*) {
+        IniWrite('"c' subs_colour.Text '"', A_ScriptDir "\User_Values.ini", "Info", "playerSubsColour")
+        global playerSubsColour := IniRead(A_ScriptDir "\User_Values.ini", "Info", "playerSubsColour")
+        player_subs_amount.SetFont(playerSubsColour)
+    }
+    okayClick(*) {
+        MyGui.Opt("-Disabled")  ; Re-enable the main window (must be done prior to the next step).
+        settingswin.Destroy()  ; Destroy the about box.
+    }
+    closesettingsgui(*) {
+        MyGui.Opt("-Disabled")
+    }
 }
 
 ;defining how frequently the script checks the local files for updates, the below value details it in seconds
