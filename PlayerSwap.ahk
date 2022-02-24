@@ -2,7 +2,7 @@
 #Requires AutoHotkey v2.0-beta.1
 TraySetIcon(A_ScriptDir "\Assets\icon.ico")
 ; Created by Tomshi - https://www.twitch.tv/tomshi
-; v1.3.0
+; v1.3.1
 
 ; This script was created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth
@@ -28,16 +28,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ; first we define where the streamlabels folder is
 userFolderIni := IniRead(A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
 
-if DirExist(A_Desktop "\Streaming\StreamLabels\")
-    files := A_Desktop "\Streaming\StreamLabels\"
-if DirExist(userFolderIni) ;if the above folder doesn't exist, it will try again using the value defined in the ini file
+if DirExist(userFolderIni)
     files := userFolderIni
 else
     {
         ;MsgBox("A StreamLabels Folder is either required at`n[" A_Desktop "\Streaming\StreamLabels\]`nOr can be changed by editing the ini file with a preferred folder")
         streamlabsPath := InputBox("Input the full path of your StreamLabels folder where your txt files are saved`nEg. C:\Users\Tom\Desktop\Streaming\StreamLabels",, "W358 H126")
-        IniWrite('"' streamlabsPath.Value '"', A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
-        return
+        IniWrite('"' streamlabsPath.Value '\"', A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
+        global files := IniRead(A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
     }
 
 ; defining player names using the ini file
