@@ -1,10 +1,10 @@
 #SingleInstance Force
 #Requires AutoHotkey v2.0-beta.1
 TraySetIcon(A_ScriptDir "\Assets\icon.ico")
-; Created by Tomshi - https://www.twitch.tv/tomshi
-; v1.3.1
+; Created by Tomshi - https://www.twitch.tv/tomshi - https://github.com/Tomshiii
+global version := "v1.3.2"
 
-; This script was created for https://www.twitch.tv/Dangers
+; This script was originally created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth
 
 /* 
@@ -29,13 +29,38 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 userFolderIni := IniRead(A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
 
 if DirExist(userFolderIni)
-    files := userFolderIni
+    {
+        if FileExist(userFolderIni "\session_cheer_amount.txt")
+            files := userFolderIni
+        else
+            {
+                MsgBox("There doesn't seem to be any StreamLabels files in the defined directory, reopen Player Swap and select a correct directory")
+                IniWrite("", A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
+                return
+            }
+    }
 else
     {
-        ;MsgBox("A StreamLabels Folder is either required at`n[" A_Desktop "\Streaming\StreamLabels\]`nOr can be changed by editing the ini file with a preferred folder")
-        streamlabsPath := InputBox("Input the full path of your StreamLabels folder where your txt files are saved`nEg. C:\Users\Tom\Desktop\Streaming\StreamLabels",, "W358 H126")
-        IniWrite('"' streamlabsPath.Value '\"', A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
-        global files := IniRead(A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
+        SLPath := MsgBox("A StreamLabels folder was not detected, would you like to set it now?", "Set StreamLabels Folder", "4 32")
+        if SLPath = "No"
+            return
+        else
+            {
+                dir:
+                SLDir := DirSelect("::{20d04fe0-3aea-1069- a2d8-08002b30309d}", 1, "Select StreamLabels Folder")
+                if SLDir = ""
+                    return
+                if FileExist(SLDir "\session_cheer_amount.txt")
+                    {
+                        IniWrite('"' SLDir '\"', A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
+                        global files := IniRead(A_ScriptDir "\User_Values.ini", "Info", "StreamLabelsFolder")
+                    }
+                else
+                    {
+                        MsgBox("There doesn't seem to be any StreamLabels files in the selected directory, please try again")
+                        goto dir
+                    }
+            }        
     }
 
 ; defining player names using the ini file
@@ -106,13 +131,13 @@ MyGui.OnEvent("Close", closegui)
 MyGui.Show()
 
 closegui(*) {
-    MyGui.Destroy() ;I don't think this line is necessary but why not
     DetectHiddenWindows(true)
     SetTitleMatchMode 2
     if WinExist("PlayerSwap.ahk - AutoHotkey")
 		WinClose()
     if WinExist("PlayerSwap.exe")
 		WinClose()
+    MyGui.Destroy() ;I don't think this line is necessary but why not
 }
 
 settings(*) {
@@ -123,6 +148,11 @@ settings(*) {
     ;define settings title
     settings_title := settingswin.Add("Text",, "Settings")
     settings_title.SetFont("underline")
+
+    ;define version text
+    version_text := settingswin.Add("Text", "X215 Y12", "Release " version)
+    version_text.SetFont("underline S11")
+    version_text.OnEvent("Click", openVer)
 
     ;define bits/subs underline titles
     settings_bits := settingswin.Add("Text","X80 Y45", "Player - Bits")
@@ -156,8 +186,20 @@ settings(*) {
     subs_colour.SetFont("S10")
     subs_colour.OnEvent("Change", subsColour)
 
+    ;define separator
+    seperate := settingswin.Add("Text", "X7 Y155", "_________________________________")
+    ;defining update frequency
+    update_text := settingswin.Add("Text", "X40 Y203", "Update Frequency (s):")
+    update_text.SetFont("S12")
+    update_start := fire_frequency
+    update_setting := settingswin.Add("Edit", "X205 Y200 w100")
+    update_updown := settingswin.Add("UpDown",, fire_frequency)
+    update_setting.SetFont("S10")
+    update_updown.OnEvent("Change", updown)
+    update_setting.OnEvent("Change", updown)
+
     ;defining final button
-    okayButton := settingswin.Add("Button", "X260 Y175 w45 h30", "OK")
+    okayButton := settingswin.Add("Button", "Default X260 Y240 w45 h30", "OK")
     okayButton.SetFont("S10")
     okayButton.OnEvent("Click", okayClick)
 
@@ -191,10 +233,19 @@ settings(*) {
     closesettingsgui(*) {
         MyGui.Opt("-Disabled")
     }
+    updown(*) {
+        IniWrite('"' update_updown.Value '"', A_ScriptDir "\User_Values.ini", "Info", "updateFrequency")
+        global fire_frequency := IniRead(A_ScriptDir "\User_Values.ini", "Info", "updateFrequency")
+        global fire := fire_frequency * 1000
+    }
+    openVer(*) {
+        if not WinExist("Releases · Tomshiii/PlayerSwap")
+            run("https://github.com/Tomshiii/PlayerSwap/releases")
+    }
 }
 
 ;defining how frequently the script checks the local files for updates, the below value details it in seconds
-fire_frequency := 2.5
+fire_frequency := IniRead(A_ScriptDir "\User_Values.ini", "Info", "updateFrequency")
 global fire := fire_frequency * 1000
 SetTimer(update, -fire) ;this timer is what allows us to repeatedly update the gui
 

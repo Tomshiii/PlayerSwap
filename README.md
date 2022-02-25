@@ -5,7 +5,7 @@ It tracks who should be playing at a given point in time as well as how much $ i
 [![](https://user-images.githubusercontent.com/53557479/155483094-0b2a0ebb-d6ba-4885-be3c-a234f6894833.png)]()
 
 ## For subs
-The script tracks subpoints and does a simple `subpoints` * `2.5` to get a $ value. Technically this means Tier 3 subs account for more than they're supposed to but it's more accurate than T2 & T3 subs not counting any extra at all
+The script tracks subpoints and does a simple `subpoints` * `2.5` to get a $ value. Technically this means Tier 3 subs account for more than they're supposed to (as you get 1 extra sub point for a Tier 3) but it's still more accurate than T2 & T3 subs not counting any extra at all
 
 ## For bits
 The script tracks the amount of bits given in the current session, then does a simple `bits` / `100` to get an accurate $ value
@@ -15,10 +15,10 @@ The script tracks the amount of bits given in the current session, then does a s
 - Download and extract the [latest version of PlayerSwap](https://github.com/Tomshiii/PlayerSwap/releases) ||  [![](https://img.shields.io/github/v/release/tomshiii/playerswap)](https://github.com/Tomshiii/PlayerSwap/releases)
 - Set the destination folder for the text files within StreamLabels using the button shown here -> [![](https://user-images.githubusercontent.com/53557479/155299364-b75c082a-1964-411f-bf47-33f664a6993c.png)]()
 - `Player Swap` will prompt you for your StreamLabels destination folder, input it into the field provided
-- Set name and colours for both players within the settings;
+- Set name and colours for both players within the settings as well as the update frequency of the script;
 
-    [![](https://user-images.githubusercontent.com/53557479/155485589-b848264b-c3c1-499a-9f20-59993778d222.png)]()
+    [![](https://user-images.githubusercontent.com/53557479/155691020-84f37cec-41b5-4f0f-a9c7-11c79f651c58.png)]()
 - Keep both `PlayerSwap.exe` and `StreamLabels` open and enjoy!
  
-*Note: Streamlabels only updates its text files periodically, this script reads those files every 2.5s, so although this script is constantly updating, StreamLabels is incredibly slow to update and you will notice a delay*
+*Note: Streamlabels only updates its text files periodically, this script reads those files every 2s (by default), so although this script is constantly updating, StreamLabels is incredibly slow to update and you will notice a delay*
 
