@@ -2,7 +2,14 @@
 #Requires AutoHotkey v2.0-beta.1
 TraySetIcon(A_ScriptDir "\Assets\icon.ico")
 ; Created by Tomshi - https://www.twitch.tv/tomshi - https://github.com/Tomshiii
-global version := "v1.3.2"
+version := "v1.3.3"
+
+;@Ahk2Exe-SetMainIcon "C:\Program Files\ahk\PlayerSwap\Assets\icon.ico"
+;@Ahk2Exe-SetCompanyName Tomshi
+;@Ahk2Exe-SetVersion 1.3.3
+;@Ahk2Exe-SetDescription Player Swap
+;@Ahk2Exe-SetName Player Swap
+;@Ahk2Exe-SetCopyright 2022
 
 ; This script was originally created for https://www.twitch.tv/Dangers
 ; It allows tracking of bits and subs in a given stream (using local text files created by streamlabels or anything that pulls from the twitch api) so the player with the higher total $ count plays the game allowing swapping back and forth for funny gameplay and content as the total $ changes back and forth

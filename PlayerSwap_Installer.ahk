@@ -1,0 +1,10 @@
+if not DirExist(A_ScriptDir "\Assets")
+    DirCreate(A_ScriptDir "\Assets")
+
+FileInstall("C:\Program Files\ahk\PlayerSwap\Assets\icon.ico", A_ScriptDir "\Assets\icon.ico", 1)
+FileInstall("C:\Program Files\ahk\PlayerSwap\Assets\bits.png", A_ScriptDir "\Assets\bits.png", 1)
+FileInstall("C:\Program Files\ahk\PlayerSwap\Assets\subs.png", A_ScriptDir "\Assets\subs.png", 1)
+FileInstall("C:\Program Files\ahk\PlayerSwap\LICENSE", A_ScriptDir "\LICENSE", 1)
+FileInstall("C:\Program Files\ahk\PlayerSwap\README.md", A_ScriptDir "\README.md", 1)
+FileInstall("C:\Program Files\ahk\PlayerSwap\User_Values.ini", A_ScriptDir "\User_Values.ini", 1)
+FileInstall("C:\Program Files\ahk\PlayerSwap\PlayerSwap.exe", A_ScriptDir "\PlayerSwap.exe", 1)
